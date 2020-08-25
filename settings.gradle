@@ -1,2 +1,4 @@
+include ':apt_compiler'
+include ':apt_annotation'
 include ':app'
-rootProject.name = "Annotation_sample"
+rootProject.name = "Annotation_APT_sample"

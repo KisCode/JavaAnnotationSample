@@ -11,14 +11,13 @@ import com.kiscode.annotation.ormlite.TableCreator;
 import com.kiscode.annotation.pojo.Person;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 
+
+@HelloAnnotation
 public class MainActivity extends AppCompatActivity {
 
     @Override
-    @MyAnnotation(value = "Jordan", id = 10)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
