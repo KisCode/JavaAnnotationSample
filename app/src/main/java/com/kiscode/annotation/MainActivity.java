@@ -14,7 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 
-@HelloAnnotation
+@Hello
 public class MainActivity extends AppCompatActivity {
 
     @Override

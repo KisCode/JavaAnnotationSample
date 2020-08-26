@@ -1,7 +1,7 @@
 package com.kiscode.compiler;
 
 import com.google.auto.service.AutoService;
-import com.kiscode.annotation.HelloAnnotation;
+import com.kiscode.annotation.Hello;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -19,6 +19,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
@@ -33,7 +34,7 @@ public class HelloProcessor extends AbstractProcessor {
     public Set<String> getSupportedAnnotationTypes() {
         //设置支持的注解类型
         Set<String> supportTypes = new HashSet<>();
-        supportTypes.add(HelloAnnotation.class.getCanonicalName());
+        supportTypes.add(Hello.class.getCanonicalName());
         return supportTypes;
     }
 /*
@@ -53,11 +54,11 @@ public class HelloProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(HelloAnnotation.class);
-        if (elements.isEmpty()) return false;
+        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Hello.class);
+//        if (elements.isEmpty()) return false;
 
         try {
-            parseElements(annotations);
+            parseElements(elements);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,23 +66,27 @@ public class HelloProcessor extends AbstractProcessor {
     }
 
     private void parseElements(Set<? extends Element> elements) throws IOException {
-        for (Element element:elements) {
-
-            mMessager.printMessage(Diagnostic.Kind.NOTE, "parse:"+element.toString());
-            String elementName =element.getEnclosingElement().getSimpleName().toString();
-            MethodSpec main=MethodSpec.methodBuilder("main")
-                    .addModifiers(Modifier.STATIC,Modifier.PUBLIC)
-                    .returns(void.class)
-                    .addParameter(String[].class,"args")
-                    //这里的$T和$S都必须大写否则会报错
-                    .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
-                    .build();
-            TypeSpec helloWorld=TypeSpec.classBuilder("Hello"+elementName)
-                    .addModifiers(Modifier.PUBLIC,Modifier.FINAL)
-                    .addMethod(main)
-                    .build();
-            JavaFile javaFile = JavaFile.builder("com.example.javapoetbutterknife", helloWorld).build();
-            javaFile.writeTo(mFiler);
+        for (Element element : elements) {
+            if (element.getKind() == ElementKind.CLASS) {
+                TypeElement typeElement = (TypeElement) element;
+                mMessager.printMessage(Diagnostic.Kind.NOTE, "parse:" + typeElement.getSimpleName().toString());
+                String elementName = typeElement.getSimpleName().toString();
+                //创建方法
+                MethodSpec main = MethodSpec.methodBuilder("main")
+                        .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
+                        .returns(void.class)
+                        .addParameter(String[].class, "args")
+                        //这里的$T和$S都必须大写否则会报错
+                        .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!" + elementName)
+                        .build();
+                //创建类
+                TypeSpec helloWorld = TypeSpec.classBuilder("Hello" + elementName)
+                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                        .addMethod(main)
+                        .build();
+                JavaFile javaFile = JavaFile.builder("com.kiscode.annotation", helloWorld).build();
+                javaFile.writeTo(mFiler);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.kiscode.annotation.pojo;
 
 
+import com.kiscode.annotation.Hello;
 import com.kiscode.annotation.ormlite.DataTable;
 import com.kiscode.annotation.ormlite.SqlTypeEnum;
 import com.kiscode.annotation.ormlite.TableColumn;
