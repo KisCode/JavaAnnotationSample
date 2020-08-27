@@ -4,15 +4,14 @@ package com.kiscode.compiler;
 import com.google.auto.service.AutoService;
 import com.kiscode.annotation.BindView;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +39,10 @@ import javax.tools.Diagnostic;
  */
 @AutoService(Processor.class)
 public class BindViewProcessor extends AbstractProcessor {
+    private static final String PARAMETER_NAME_TARGET = "target";
+    private static final String METHOD_NAME_BIND = "bind";
+    private static final String INTERFACE_FULL_NAME = "com.kiscode.apt.library.ViewBinder";
+
     private Messager mMessager;
     private Elements elementUitls;
     private Filer mFiler;
@@ -124,10 +127,10 @@ public class BindViewProcessor extends AbstractProcessor {
 
 
             //创建参数 参数类型Class当前注解所在Activty.class ,参数名为target
-            ParameterSpec parameterSpec = ParameterSpec.builder(className, "target").build();
+            ParameterSpec parameterSpec = ParameterSpec.builder(className, PARAMETER_NAME_TARGET).build();
 
             //拼接方法
-            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("bind")
+            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(METHOD_NAME_BIND)
                     .addAnnotation(Override.class)
                     .addModifiers(Modifier.PUBLIC)
                     .addParameter(parameterSpec);
@@ -138,14 +141,15 @@ public class BindViewProcessor extends AbstractProcessor {
                 //拼接成target.tv=target.findViewById(R.id.tv)
                 String methodContent = "$N." + fieldName + " = $N.findViewById($L)";
                 //添加方法中具体代码
-                methodBuilder.addStatement(methodContent, "target", "target", viewId);
+                methodBuilder.addStatement(methodContent, PARAMETER_NAME_TARGET, PARAMETER_NAME_TARGET, viewId);
+
             }
 
             MethodSpec methodSpec = methodBuilder.build();
 
             //通过具体包名+类获取ViewBinder接口 ，即类型为com.kiscode.apt.library.ViewBinder的 TypeElement
             TypeElement
-                    viewBinderType = elementUitls.getTypeElement("com.kiscode.apt.library.ViewBinder");
+                    viewBinderType = elementUitls.getTypeElement(INTERFACE_FULL_NAME);
             // 获取 ViewBinder<className>
             ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(viewBinderType), className);
 

@@ -18,5 +18,16 @@ public class ButterKnife {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
+
+        String onClickClassName = object.getClass().getName() + "$$OnClick";
+        try {
+            Object viewBinderObj = Class.forName(onClickClassName).newInstance();
+            if (viewBinderObj instanceof OnEvent) {
+                OnEvent<T> onEvent = (OnEvent<T>) viewBinderObj;
+                onEvent.setOnClickListener(object);
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }

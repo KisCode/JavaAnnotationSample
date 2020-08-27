@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kiscode.annotation.ormlite.DataTable;
 import com.kiscode.annotation.ormlite.TableColumn;
@@ -42,7 +43,14 @@ public class MainActivity extends AppCompatActivity {
         tvTitle.setText("I'm MainActivity");
     }
 
-    private void createSql() {
+    @OnClick(R.id.btn_open)
+    public void open() {
+        Toast.makeText(this, "Open", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @OnClick(R.id.btn_sql_create)
+    public void createSql() {
         try {
             String createTableSql = TableCreator.createTable("com.kiscode.annotation.pojo.Person");
             Log.i("createPersonTableSql", createTableSql);
@@ -54,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void testAnnotation() {
+    @OnClick(R.id.btn_test_annotation)
+    public void testAnnotation() {
         Person person = new Person();
 
         Class personClass = person.getClass();
