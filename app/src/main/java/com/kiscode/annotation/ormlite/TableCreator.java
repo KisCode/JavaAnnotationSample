@@ -9,13 +9,19 @@ import java.util.List;
 
 /****
  * Description: 
- * Author:  Administrator
+ * Author:  kisCode
  * CreateDate: 2020/8/24 22:50
  */
 
 public class TableCreator {
     private static final String TAG = "TableCreator";
 
+    /***
+     * 根据指定类名，获取其对应orm注解，从而生产对应的createTable sql
+     * @param className 指定类名
+     * @return createTable sql
+     * @throws ClassNotFoundException
+     */
     public static String createTable(String className) throws ClassNotFoundException {
         Class clz = Class.forName(className);
         DataTable dataTableAnnotation = (DataTable) clz.getAnnotation(DataTable.class);

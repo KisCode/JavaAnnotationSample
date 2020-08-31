@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /***
+     * 通过注解运行时创建
+     */
     @OnClick(R.id.btn_sql_create)
     public void createSql() {
         try {
